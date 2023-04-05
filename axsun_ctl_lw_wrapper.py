@@ -21,7 +21,7 @@ class AxsunCtlLwWrapper:
     """TODO
     """
 
-    def __init__(self, path:str = None):
+    def __init__(self, path: str = None):
         # if no path is provided, use our default
         if path is None:
             self.cdll = self._load_default_lib()
@@ -50,7 +50,7 @@ class AxsunCtlLwWrapper:
         else:
             raise TypeError(f"{type(err_code)} is not a valid error code type")
 
-    def axGetErrorExplained(self, err_code: AxErr) -> str:
+    def axGetErrorExplained(self, err_code: Union[int, AxErr]) -> str:
         func = self.cdll.axGetErrorExplained
         func.argtypes = [ctypes.c_int, ctypes.c_char_p]
         out_string = ctypes.create_string_buffer(256)
