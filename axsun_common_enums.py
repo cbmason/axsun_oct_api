@@ -11,7 +11,7 @@ Created by Chris Mason on 04/05/2023
 from enum import Enum
 
 
-class AxsunCommonEnums(Enum):
+class AxErr(Enum):
     NO_AxERROR = 0
     UNKNOWN_ERROR = -10004
     INVALID_ARGUMENTS = -10007

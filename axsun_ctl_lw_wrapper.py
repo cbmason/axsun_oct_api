@@ -13,7 +13,7 @@ import ctypes
 import os
 import sys
 
-from axsun_common_enums import AxsunCommonEnums
+from axsun_common_enums import AxErr
 from typing import Union
 
 
@@ -42,15 +42,15 @@ class AxsunCtlLwWrapper:
         return ctypes.CDLL(lib_path)
 
     @staticmethod
-    def _filter_err_code(err_code: Union[int, AxsunCommonEnums]) -> int:
-        if isinstance(err_code, AxsunCommonEnums):
+    def _filter_err_code(err_code: Union[int, AxErr]) -> int:
+        if isinstance(err_code, AxErr):
             return err_code.value
         elif isinstance(err_code, int):
             return err_code
         else:
             raise TypeError(f"{type(err_code)} is not a valid error code type")
 
-    def axGetErrorExplained(self, err_code: AxsunCommonEnums) -> str:
+    def axGetErrorExplained(self, err_code: AxErr) -> str:
         func = self.cdll.axGetErrorExplained
         func.argtypes = [ctypes.c_int, ctypes.c_char_p]
         out_string = ctypes.create_string_buffer(256)
