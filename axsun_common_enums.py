@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 axsun_common_enums.py
 
@@ -8,6 +7,7 @@ Python transcription of the enumerations found in AxsunCommonEnums.h
 
 Created by Chris Mason on 04/05/2023
 """
+
 from enum import Enum
 
 
@@ -161,3 +161,39 @@ class AxErr(Enum):
     DAC_TABLE_NOT_LOADED = -1048
     USB_LOAD_LIBRARY_FAILED = -10011
     USB_LOAD_FUNCTION_FAILED = -10012
+
+
+class AxPipelineMode(Enum):
+    UNKNOWN = 0
+    RAW_ADC = 1
+    WINDOWED = 2
+    IFFT = 3
+    MOD_SQUARED = 4
+    SQRT = 5
+    LOG = 6
+    EIGHT_BIT = 7
+    JPEG_COMP = 8
+    PIPELINEMODE_RFU = 9
+
+
+class AxChannelMode(Enum):
+    CHAN_1 = 0
+    CHAN_2 = 1
+    SUM_CHANNELS = 2
+    INTERLEAVE_CHANNELS = 3
+    CHANNELMODE_RFU = 4
+
+
+class AxDataType(Enum):
+    U8 = 0
+    U16 = 1
+    U32 = 2
+    CMPLX = 3
+    I16 = 4
+    U16_le = 5
+    U32_le = 6
+    CMPLX_le = 7
+    I16_le = 8
+    I32_le = 9
+    AXDATATYPE_RFU = 10
+
