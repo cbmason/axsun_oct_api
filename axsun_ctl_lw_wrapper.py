@@ -114,7 +114,13 @@ class AxsunCtlLwWrapper:
         return out_string.value.decode('utf-8')
 
     def axOpenAxsunOCTControl(self, open_all_interfaces: int) -> AxErr:
-        raise NotImplementedError()
+        self._check_thread()
+        func = self.cdll.axOpenAxsunOCTControl
+        func.argtypes = [ctypes.c_uint32]
+        func.restype = ctypes.c_int
+        err_code = func(open_all_interfaces)
+        self._check_error_ok(err_code)
+        return AxErr(err_code)
 
     def axCloseAxsunOCTControl(self) -> AxErr:
         raise NotImplementedError()
@@ -212,7 +218,6 @@ class AxsunCtlLwWrapper:
         raise NotImplementedError()
 
     def axFirmwareVersion(self, which_device: int) -> tuple[AxErr, list[int]]:
-        # Don't need to check thread here
         self._check_thread()
         func = self.cdll.axFirmwareVersion
         func.argtypes = [ctypes.POINTER(ctypes.c_uint32),
@@ -326,3 +331,4 @@ class AxsunCtlLwWrapper:
 if __name__ == "__main__":
     instance = AxsunCtlLwWrapper()
     print(f"Successfully loaded DLL: {instance.cdll}")
+    instance.axFirmwareVersion(0)
