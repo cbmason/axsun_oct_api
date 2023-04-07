@@ -35,13 +35,13 @@ class AxsunCtlLwWrapper:
         functions from a single thread.
     """
     _instance = None
-    _lock = threading.Lock
+    _lock = threading.Lock()
 
     AxConnectCallbackFunctionC = ctypes.CFUNCTYPE(AxErr, ctypes.c_void_p)
 
     def __new__(cls, path: str = None):
         with cls._lock:
-            if cls.instance is None:
+            if cls._instance is None:
                 cls._instance = super(AxsunCtlLwWrapper, cls).__new__(cls)
         return cls._instance
 
@@ -91,6 +91,16 @@ class AxsunCtlLwWrapper:
             return err_code
         else:
             raise TypeError(f"{type(err_code)} is not a valid error code type")
+
+    def _check_error_ok(self, err_code: Union[int, AxErr]) -> bool:
+        """Returns True if error code indicates NO ERROR"""
+        filtered_code = self._filter_enum(err_code)
+        if filtered_code != AxErr.NO_AxERROR.value:
+            err_string = self.axGetErrorExplained(err_code)
+            print(f"ERROR: {err_string}")
+            # TODO: do we raise exception here?
+            return False
+        return True
 
     @lru_cache
     def axGetErrorExplained(self, err_code: Union[int, AxErr]) -> str:
@@ -202,7 +212,23 @@ class AxsunCtlLwWrapper:
         raise NotImplementedError()
 
     def axFirmwareVersion(self, which_device: int) -> tuple[AxErr, list[int]]:
-        raise NotImplementedError()
+        # Don't need to check thread here
+        self._check_thread()
+        func = self.cdll.axFirmwareVersion
+        func.argtypes = [ctypes.POINTER(ctypes.c_uint32),
+                         ctypes.POINTER(ctypes.c_uint32),
+                         ctypes.POINTER(ctypes.c_uint32),
+                         ctypes.c_int32]
+        func.restype = ctypes.c_int
+        major = ctypes.c_uint32()
+        minor = ctypes.c_uint32()
+        patch = ctypes.c_uint32()
+        err_code = func(ctypes.byref(major), ctypes.byref(minor), ctypes.byref(patch), which_device)
+        if not self._check_error_ok(err_code):
+            major = 0
+            minor = 0
+            patch = 0
+        return tuple([AxErr(err_code), list((major, minor, patch))])
 
     def axFPGAVersion(self, which_device: int) -> tuple[AxErr, list[int]]:
         raise NotImplementedError()
